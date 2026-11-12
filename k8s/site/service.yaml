@@ -1,14 +1,12 @@
-# Exercice 4 — Le Service qui donne une adresse stable à vos pods.
-# Aide : kubectl explain service.spec
 apiVersion: v1
 kind: Service
 metadata:
-  name: site
+  name: site              # nom DNS interne : "site"
 spec:
-  type: ClusterIP
+  type: ClusterIP         # IP interne au cluster uniquement
   selector:
-    app: TODO          # quels pods reçoivent le trafic ?
+    app: site             # envoie le trafic aux pods app=site
   ports:
     - name: http
-      port: 80         # port du Service
-      targetPort: TODO # port du conteneur
+      port: 80            # port sur lequel le SERVICE écoute
+      targetPort: 80      # port du CONTENEUR vers lequel il transmet
