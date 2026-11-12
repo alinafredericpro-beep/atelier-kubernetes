@@ -1,28 +1,42 @@
+# Exercice 4 — Le Deployment de votre site.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: site
   labels:
-    app: site                 # label du Deployment lui-même (pour le retrouver)
+    app: site
 spec:
-  replicas: 3                # nombre de pods voulus
+  replicas: 3
   selector:
     matchLabels:
-      app: site               # "mes pods sont ceux qui ont app=site"
-  template:                   # le MODÈLE de pod à fabriquer
+      app: site
+  template:
     metadata:
       labels:
-        app: site             # chaque pod créé reçoit ce label → doit = selector
+        app: site
     spec:
       containers:
-        - name: nginx         # nom du conteneur (utilisé par "set image nginx=...")
-          image: nginx:1.27   # image + tag précis (pas "latest" : on veut la même version partout)
+        - name: nginx
+          image: nginx:1.28
           ports:
-            - containerPort: 80   # documente le port écouté par nginx
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
           volumeMounts:
-            - name: html                        # quel volume monter (nom défini plus bas)
-              mountPath: /usr/share/nginx/html  # où le faire apparaître dans le conteneur
+            - name: html
+              mountPath: /usr/share/nginx/html
       volumes:
-        - name: html          # déclaration du volume au niveau du pod
+        - name: html
           configMap:
-            name: site-html   # sa source : la ConfigMap
+            name: site-html

@@ -107,7 +107,15 @@ Pour avoir la cause :
 ## Bonus (facultatif)
 
 14. Bonus réalisés et remarques :
-    >
+    >A – Ingress : ingress.yaml complété (Service site, port 80). Le site est accessible sur le port 8081 via Traefik. En supprimant les pods, le site reste accessible sans rien relancer, contrairement au port-forward, car l’Ingress passe par le Service qui suit automatiquement les nouveaux pods.
+
+B – Probes et ressources : ajout d’une readinessProbe HTTP sur / et de requests/limits (50m/100m CPU, 32Mi/64Mi mémoire). Avec path: /nope, le nouveau pod reste Running mais 0/1 (« Readiness probe failed: 404 »). Il ne reçoit pas de trafic, et le rolling update se bloque sans coupure du site.
+
+C – Drain : après kubectl drain k3d-lab-agent-0, le nœud passe en SchedulingDisabled et ses pods sont recréés sur les autres nœuds. Après uncordon, les pods ne reviennent pas automatiquement : Kubernetes ne déplace pas un pod qui fonctionne, seuls les nouveaux pods peuvent y être placés.
+
+D – Namespaces : création d’un namespace prod contenant une seconde copie du site. Les mêmes noms d’objets coexistent sans conflit, et Portainer permet de filtrer par namespace.
+
+Remarque : la version actuelle de Portainer demande un setup token, récupéré avec kubectl logs -n portainer deploy/portainer | grep -i token.
 
 ---
 
